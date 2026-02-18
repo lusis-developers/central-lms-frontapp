@@ -4,8 +4,8 @@ import { useRouter, useRoute } from 'vue-router'
 import usersService from '@/services/users.service'
 import { useUserStore } from '@/stores/user'
 import { useGamificationStore } from '@/stores/gamification.store'
-import lightLogo from '../assets/fudmaster-color.png'
-import darkLogo from '../assets/fudmaster-dark.png'
+import lightLogo from '@/assets/logos/logo-short.png'
+import darkLogo from '@/assets/logos/logo-large-white.png'
 
 const props = defineProps({
   showMenuButton: {
@@ -132,7 +132,7 @@ watch(isLoggedIn, (val) => { if (val) fetchPoints(); else gamificationStore.rese
         </button>
         <div class="logo">
           <picture>
-            <source srcset="../assets/iso-verde.png" media="(max-width: 768px)">
+            <source srcset="../assets/logos/logo-short.png" media="(max-width: 768px)">
             <img :src="logoSrc" alt="fudmaster-logo" @click="onLogoClick">
           </picture>
         </div>
@@ -197,11 +197,13 @@ watch(isLoggedIn, (val) => { if (val) fetchPoints(); else gamificationStore.rese
         }
 
         .logo {
-          width: 120px;
+          height: 48px;
 
           img {
-            width: 100%;
+            height: 100%;
+            width: auto;
             cursor: pointer;
+            object-fit: contain;
           }
         }
       }
@@ -333,7 +335,8 @@ watch(isLoggedIn, (val) => { if (val) fetchPoints(); else gamificationStore.rese
   }
 
   .user-header .logo {
-    width: 88px;
+    height: 40px;
+    width: auto;
   }
 
   .user-header-wrapper-right .user-pill {

@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 
 // Layout
-import UserLayout from "../layout/UserLayout.vue";
+// import UserLayout from "../layout/UserLayout.vue"; // Removed unused
 import PublicLayout from "../layout/PublicLayout.vue";
 
 // Views
 import UserDashboard from "../views/User/UserDashboard.vue";
 import MyCourses from "../views/User/MyCourses.vue";
 import AllCourses from "../views/User/AllCourses.vue";
+// import CourseDetail from "../views/User/CourseDetail.vue"; // Removed unused
 import CourseDetail from "../views/User/CourseDetail.vue";
 import LectureDetail from "../views/User/LectureDetail.vue";
 import QuizView from "../views/User/QuizView.vue";
@@ -24,92 +25,111 @@ import PayResponse from "../views/PayResponse.vue";
 import Careers from "../views/Careers.vue";
 import CareerDetail from "../views/CareerDetail.vue";
 
+// Hub
+import HubView from "@/views/Hub/HubView.vue";
+import SchoolLayout from "@/layout/SchoolLayout.vue";
+
 const routes: Array<RouteRecordRaw> = [
+  // Hub Landing (Select School)
   {
     path: '/',
-    component: UserLayout,
+    component: HubView,
     meta: {
-      title: 'Fudmaster | lleva tu cocina al siguiente nivel',
-      requiresAuth: true
-    },
+      title: 'Hub de Academias',
+      requiresAuth: true // Protected route, must login first
+    }
+  },
+  // School Context Routes
+  {
+    path: '/:schoolSlug',
+    component: SchoolLayout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
-        redirect: '/dashboard'
+        redirect: to => `/${to.params.schoolSlug}/dashboard`
       },
       {
         path: 'dashboard',
         component: UserDashboard,
-        meta: { title: 'Dashboard', requiresAuth: true }
+        meta: { title: 'Dashboard' }
       },
       {
         path: 'courses',
         component: MyCourses,
-        meta: { title: 'Mis cursos', requiresAuth: true }
+        meta: { title: 'Mis cursos' }
       },
       {
         path: 'courses/all',
         component: AllCourses,
-        meta: { title: 'Todos los cursos', requiresAuth: true }
+        meta: { title: 'Todos los cursos' }
+      },
+      {
+        path: 'courses/:id',
+        component: CourseDetail,
+        meta: { title: 'Detalle del curso' }
       },
       {
         path: 'courses/:id/lectures/:lectureId',
         component: LectureDetail,
-        meta: { title: 'Clase', requiresAuth: true }
+        meta: { title: 'Clase' }
       },
       {
         path: 'courses/:id/quiz',
         component: QuizView,
-        meta: { title: 'Quiz', requiresAuth: true }
+        meta: { title: 'Quiz' }
       },
       {
         path: 'courses/:id/quiz/result',
         component: QuizResult,
-        meta: { title: 'Resultado del quiz', requiresAuth: true }
+        meta: { title: 'Resultado del quiz' }
       },
       {
         path: 'courses/:id/quizzes/:quizId',
         component: QuizView,
-        meta: { title: 'Quiz', requiresAuth: true }
+        meta: { title: 'Quiz' }
       },
       {
         path: 'courses/:id/quizzes/:quizId/result',
         component: QuizResult,
-        meta: { title: 'Resultado del quiz', requiresAuth: true }
+        meta: { title: 'Resultado del quiz' }
       },
       {
         path: 'careers',
         component: Careers,
-        meta: { title: 'Escuelas o Carreras', requiresAuth: true }
+        meta: { title: 'Escuelas o Carreras' }
       },
       {
         path: 'careers/:id',
         component: CareerDetail,
-        meta: { title: 'Detalle de carrera', requiresAuth: true }
+        meta: { title: 'Detalle de carrera' }
       },
       {
         path: 'profile/edit',
         component: ProfileEdit,
-        meta: { title: 'Editar perfil', requiresAuth: true }
+        meta: { title: 'Editar perfil' }
       },
       {
         path: 'certificates',
         component: CertificatesView,
-        meta: { title: 'Mis Certificados', requiresAuth: true }
+        meta: { title: 'Mis Certificados' }
       }
     ]
+  },
+  // Auth & Public Routes (Keep as is)
+  {
+    path: '/courses/:id',
+    redirect: to => `/administracion-gastronomica/courses/${to.params.id}`
+  },
+  {
+    path: '/courses/:id/lectures/:lectureId',
+    redirect: to => `/administracion-gastronomica/courses/${to.params.id}/lectures/${to.params.lectureId}`
   },
   {
     path: '/onboarding',
     redirect: '/'
   },
-  {
-    path: '/courses/:id',
-    component: CourseDetail,
-    meta: {
-      title: 'Detalle del curso'
-    }
-  },
+  // ... (keep existing public routes below)
   {
     path: '/landing-page',
     component: NicoleLanding,
@@ -184,12 +204,37 @@ const router = createRouter({
   }
 })
 
-router.beforeEach((to, _from, next) => {
+import { useSchoolStore } from '@/stores/school'
+
+router.beforeEach(async (to, _from, next) => {
   const hasToken = !!localStorage.getItem('access_token')
   const requiresAuth = to.matched.some((record) => record.meta?.requiresAuth)
+  const schoolStore = useSchoolStore()
+
+  // Handle School Context
+  const schoolSlug = to.params.schoolSlug as string
+  if (schoolSlug) {
+    if (schoolStore.currentSchool?.slug !== schoolSlug) {
+      await schoolStore.setSchoolBySlug(schoolSlug)
+      if (schoolStore.error && schoolStore.error === 'School not found') {
+        // Redirect to Hub if school is invalid (or 404)
+        return next('/')
+      }
+    }
+  } else {
+    // If we are at root or non-school route, maybe clear current school?
+    // schoolStore.clearCurrentSchool()
+    // Keeping it might be fine for persistence but explicit clear is safer for Hub
+    if (to.path === '/') {
+      schoolStore.clearCurrentSchool()
+    }
+  }
 
   if (requiresAuth && !hasToken) {
-    return next({ path: '/landing-page', replace: true })
+    // If trying to access a protected school route, redirect to login or Hub?
+    // Let's redirect to Login to be standard, or Landing if that's the sales page.
+    // User said "Maintain Login".
+    return next({ path: '/login', replace: true })
   }
 
   if (to.path === '/login' && hasToken) {

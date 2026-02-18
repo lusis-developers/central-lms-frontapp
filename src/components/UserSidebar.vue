@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRouter, useRoute } from 'vue-router' // added useRoute
 import { useUserStore } from '@/stores/user'
 import { useCoursesStore } from '@/stores/courses'
 import { useCareersStore } from '@/stores/careers'
@@ -10,6 +10,7 @@ const userStore = useUserStore()
 const coursesStore = useCoursesStore()
 const careersStore = useCareersStore()
 const router = useRouter()
+const route = useRoute() // added
 
 const isDark = ref(false)
 const props = defineProps({
@@ -24,7 +25,7 @@ const careersCount = computed(() => {
   return Array.isArray(careersStore.careers) ? careersStore.careers.length : 0
 })
 
-const menu = [
+const baseMenu = [
   { name: 'Inicio', link: '/dashboard', icon: 'fa-solid fa-house' },
   { name: 'Mis Cursos', link: '/courses', icon: 'fa-solid fa-book-open' },
   { name: 'Explorar', link: '/courses/all', icon: 'fa-solid fa-compass' },
@@ -32,6 +33,16 @@ const menu = [
   { name: 'Certificados', link: '/certificates', icon: 'fa-solid fa-award' },
   { name: 'Mi Perfil', link: '/profile/edit', icon: 'fa-solid fa-user-gear' },
 ]
+
+const menu = computed(() => {
+  const slug = route.params.schoolSlug
+  if (!slug) return baseMenu
+  
+  return baseMenu.map(item => ({
+    ...item,
+    link: `/${slug}${item.link}`
+  }))
+})
 
 function isSelected(link: string) {
   const path = router.currentRoute.value.path

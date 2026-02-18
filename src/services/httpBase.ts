@@ -53,11 +53,13 @@ class APIBase {
   private axiosInstance = axios.create()
 
   constructor() {
-    const raw = (import.meta.env.CENTRAL_LMS_API as string) || 'http://localhost:8101/api'
+    const raw = (import.meta.env.VITE_CENTRAL_LMS_API as string) || 'http://localhost:8101/api'
     const trimmed = raw.replace(/\/+$/, '')
     this.baseUrl = trimmed.endsWith('/api') || /\/api\//.test(trimmed)
       ? trimmed
       : `${trimmed}/api`
+
+    console.log('🌐 API Base URL:', this.baseUrl) // Debug log as requested
     this.setupInterceptors()
   }
 
