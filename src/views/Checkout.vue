@@ -146,7 +146,7 @@ function leaveCheckout() {
       <div class="left">
         <div class="header-secure">
           <div class="brand">
-            <img src="/src/assets/fudmaster-color.png" alt="fudmaster-logo" />
+            <img src="@/assets/logos/logo-short.png" alt="fudmaster-logo" />
           </div>
           <div class="secure-badge">
             <i class="fa-solid fa-lock" /> Checkout Seguro SSL

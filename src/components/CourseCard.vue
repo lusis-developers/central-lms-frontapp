@@ -17,7 +17,7 @@ const props = defineProps({
 const emit = defineEmits(['placeholder-click'])
 
 function sanitizeUrl(url?: string) { return (url || '').toString().replace(/`/g, '').trim() }
-function coverOf(course: any) { return sanitizeUrl(course?.image_url) || sanitizeUrl(course?.coverUrl) || '/src/assets/fudmaster-color.png' }
+function coverOf(course: any) { return sanitizeUrl(course?.image_url) || sanitizeUrl(course?.coverUrl) || '@/assets/logos/logo-short.png' }
 function nameOf(course: any) { return course?.name || course?.title || 'Curso sin título' }
 function descriptionOf(course: any) { return course?.heading || course?.description || course?.shortDescription || 'Detalles próximamente.' }
 

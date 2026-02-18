@@ -18,7 +18,7 @@ import ProfileEdit from "../views/User/ProfileEdit.vue";
 // import UserOnboarding from "../views/User/UserOnboarding.vue";
 
 // Landingpage
-import NicoleLanding from "../views/Landing/NicoleLanding.vue";
+import LandingPage from "../views/Landing/LandingPage.vue";
 import LoginView from "../views/Auth/Login.vue";
 import Checkout from "../views/Checkout.vue";
 import PayResponse from "../views/PayResponse.vue";
@@ -30,13 +30,23 @@ import HubView from "@/views/Hub/HubView.vue";
 import SchoolLayout from "@/layout/SchoolLayout.vue";
 
 const routes: Array<RouteRecordRaw> = [
-  // Hub Landing (Select School)
+  // Public Landing Page (Root)
   {
     path: '/',
+    component: LandingPage,
+    meta: {
+      title: 'Fudmaster - Best Platform to Empower Skills',
+      requiresAuth: false
+    }
+  },
+  // Hub Landing (Authenticated - Select School)
+  // MOVED from '/' to '/hub'
+  {
+    path: '/hub',
     component: HubView,
     meta: {
       title: 'Hub de Academias',
-      requiresAuth: true // Protected route, must login first
+      requiresAuth: true
     }
   },
   // School Context Routes
@@ -131,13 +141,6 @@ const routes: Array<RouteRecordRaw> = [
   },
   // ... (keep existing public routes below)
   {
-    path: '/landing-page',
-    component: NicoleLanding,
-    meta: {
-      title: 'Cambia tu vida gastronómica con Nicole y su equipo'
-    }
-  },
-  {
     path: '/login',
     component: PublicLayout,
     meta: { title: 'Iniciar sesión' },
@@ -218,14 +221,14 @@ router.beforeEach(async (to, _from, next) => {
       await schoolStore.setSchoolBySlug(schoolSlug)
       if (schoolStore.error && schoolStore.error === 'School not found') {
         // Redirect to Hub if school is invalid (or 404)
-        return next('/')
+        return next('/hub')
       }
     }
   } else {
     // If we are at root or non-school route, maybe clear current school?
     // schoolStore.clearCurrentSchool()
     // Keeping it might be fine for persistence but explicit clear is safer for Hub
-    if (to.path === '/') {
+    if (to.path === '/hub') {
       schoolStore.clearCurrentSchool()
     }
   }
@@ -238,7 +241,12 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   if (to.path === '/login' && hasToken) {
-    return next({ path: '/', replace: true })
+    return next({ path: '/hub', replace: true })
+  }
+
+  // If user is authenticated and visits root '/', redirect to '/hub'
+  if (to.path === '/' && hasToken) {
+    return next({ path: '/hub', replace: true })
   }
 
   next()

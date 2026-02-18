@@ -11,7 +11,7 @@ function sanitizeUrl(url?: string) {
 }
 
 function coverOf(course: any) {
-  return sanitizeUrl(course.image_url) || sanitizeUrl(course.coverUrl) || '/src/assets/fudmaster-color.png'
+  return sanitizeUrl(course.image_url) || sanitizeUrl(course.coverUrl) || '@/assets/logos/logo-short.png'
 }
 
 function isActive(course: any) {
@@ -247,8 +247,19 @@ window.setInterval(() => {
   }
 }
 
-.card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: grid; text-decoration: none; transition: border-color 0.2s ease, transform 0.2s ease; }
-.card.disabled { opacity: 0.7; }
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  display: grid;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card.disabled {
+  opacity: 0.7;
+}
 
 .cover img {
   width: 100%;
@@ -295,10 +306,35 @@ window.setInterval(() => {
   font-size: 14px;
 }
 
-.countdown { padding: 12px; border-top: 1px dashed var(--border); display: inline-flex; align-items: center; gap: 6px; font-family: monospace; font-weight: 700; color: var(--text); }
-.countdown .label { font-size: 12px; color: color-mix(in oklab, var(--text), transparent 60%); margin-right: 4px; }
-.countdown .unit { background: color-mix(in oklab, var(--accent), transparent 88%); color: var(--accent); padding: 4px 6px; border-radius: 6px; min-width: 36px; text-align: center; }
-.countdown .sep { color: color-mix(in oklab, var(--text), transparent 60%); }
+.countdown {
+  padding: 12px;
+  border-top: 1px dashed var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.countdown .label {
+  font-size: 12px;
+  color: color-mix(in oklab, var(--text), transparent 60%);
+  margin-right: 4px;
+}
+
+.countdown .unit {
+  background: color-mix(in oklab, var(--accent), transparent 88%);
+  color: var(--accent);
+  padding: 4px 6px;
+  border-radius: 6px;
+  min-width: 36px;
+  text-align: center;
+}
+
+.countdown .sep {
+  color: color-mix(in oklab, var(--text), transparent 60%);
+}
 
 .meta {
   padding: 12px;
@@ -309,16 +345,94 @@ window.setInterval(() => {
   align-items: center;
   gap: 12px;
 }
-.status { border-radius: 999px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
-.status.published { background: color-mix(in oklab, var(--accent), transparent 88%); border: 1px solid var(--border); color: var(--accent); }
-.status.upcoming { background: $overlay-purple; color: $FUDMASTER-BLUE; border: 1px solid var(--border); }
-.cta { background: var(--accent); color: $white; border-radius: 999px; padding: 6px 10px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
-.cta.disabled { background: color-mix(in oklab, var(--bg), var(--text) 6%); color: color-mix(in oklab, var(--text), transparent 50%); border: 1px solid var(--border); }
-.card:hover { border-color: var(--accent); transform: translateY(-1px); }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; width: min(480px, 92vw); display: grid; gap: 12px; color: var(--text); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
-.modal-title { margin: 0; font-size: 18px; display: inline-flex; align-items: center; gap: 8px; color: var(--text); }
-.modal-desc { margin: 0; color: color-mix(in oklab, var(--text), transparent 40%); }
-.modal-btn { background: var(--accent); color: $white; border: none; border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer; justify-self: end; }
+.status {
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status.published {
+  background: color-mix(in oklab, var(--accent), transparent 88%);
+  border: 1px solid var(--border);
+  color: var(--accent);
+}
+
+.status.upcoming {
+  background: $overlay-purple;
+  color: $FUDMASTER-BLUE;
+  border: 1px solid var(--border);
+}
+
+.cta {
+  background: var(--accent);
+  color: $white;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cta.disabled {
+  background: color-mix(in oklab, var(--bg), var(--text) 6%);
+  color: color-mix(in oklab, var(--text), transparent 50%);
+  border: 1px solid var(--border);
+}
+
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  width: min(480px, 92vw);
+  display: grid;
+  gap: 12px;
+  color: var(--text);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.modal-desc {
+  margin: 0;
+  color: color-mix(in oklab, var(--text), transparent 40%);
+}
+
+.modal-btn {
+  background: var(--accent);
+  color: $white;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  justify-self: end;
+}
 </style>

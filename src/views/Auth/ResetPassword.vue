@@ -20,9 +20,9 @@ onMounted(() => {
   // Get token from query or params
   const queryToken = route.query.token as string
   const paramToken = route.params.token as string
-  
+
   token.value = queryToken || paramToken || ''
-  
+
   if (!token.value) {
     error.value = 'Token de recuperación no válido o faltante.'
   }
@@ -44,17 +44,17 @@ async function submit() {
     error.value = 'Por favor completa todos los campos.'
     return
   }
-  
+
   if (pwd !== confirm) {
     error.value = 'Las contraseñas no coinciden.'
     return
   }
-  
+
   if (pwd.length < 6) {
     error.value = 'La contraseña debe tener al menos 6 caracteres.'
     return
   }
-  
+
   if (!token.value) {
     error.value = 'Token inválido. Solicita un nuevo enlace.'
     return
@@ -63,16 +63,16 @@ async function submit() {
   loading.value = true
   error.value = ''
   successMessage.value = ''
-  
+
   try {
     const response = await userStore.resetPassword(token.value, pwd)
     successMessage.value = response.message || 'Contraseña restablecida exitosamente.'
-    
+
     // Redirect to login after success
     setTimeout(() => {
       router.push('/login?msg=Contraseña actualizada. Inicia sesión.')
     }, 2000)
-    
+
   } catch (e: any) {
     const msg = e.response?.data?.message || e.message || 'Error al restablecer contraseña.'
     error.value = msg
@@ -86,7 +86,7 @@ async function submit() {
   <div class="reset-page">
     
     <div class="brand-header">
-      <img src="/src/assets/fudmaster-color.png" alt="Fudmaster" class="logo" />
+      <img src="@/assets/logos/logo-short.png" alt="Fudmaster" class="logo" />
     </div>
 
     <div class="card">
@@ -174,8 +174,8 @@ $white: #ffffff;
 $alert-error: #ef4444;
 $alert-success: #10b981;
 
-.reset-page { 
-  width: 100%; 
+.reset-page {
+  width: 100%;
   min-height: 100vh;
   padding: 40px 16px;
   background-color: $FUDMASTER-LIGHT;
@@ -188,6 +188,7 @@ $alert-success: #10b981;
 
 .brand-header {
   text-align: center;
+
   .logo {
     height: 48px;
     width: auto;
@@ -232,19 +233,25 @@ $alert-success: #10b981;
   align-items: center;
   gap: 10px;
   margin-bottom: 20px;
-  
+
   &.error {
     background: rgba($alert-error, 0.1);
     color: darken($alert-error, 10%);
     border: 1px solid rgba($alert-error, 0.2);
-    i { color: $alert-error; }
+
+    i {
+      color: $alert-error;
+    }
   }
-  
+
   &.success {
     background: rgba($alert-success, 0.1);
     color: darken($alert-success, 10%);
     border: 1px solid rgba($alert-success, 0.2);
-    i { color: $alert-success; }
+
+    i {
+      color: $alert-success;
+    }
   }
 }
 
@@ -258,7 +265,7 @@ $alert-success: #10b981;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  
+
   label {
     font-size: 14px;
     font-weight: 600;
@@ -268,7 +275,7 @@ $alert-success: #10b981;
 
 .input-wrapper {
   position: relative;
-  
+
   .icon {
     position: absolute;
     left: 16px;
@@ -278,7 +285,7 @@ $alert-success: #10b981;
     pointer-events: none;
     transition: color 0.2s;
   }
-  
+
   input {
     width: 100%;
     padding: 14px 44px 14px 44px; // Extra padding on right for eye button
@@ -288,17 +295,17 @@ $alert-success: #10b981;
     color: $FUDMASTER-DARK;
     background: $white;
     transition: all 0.2s ease;
-    
+
     &::placeholder {
       color: rgba($FUDMASTER-DARK, 0.3);
     }
-    
+
     &:focus {
       outline: none;
       border-color: $FUDMASTER-BLUE;
       box-shadow: 0 0 0 4px rgba($FUDMASTER-BLUE, 0.1);
-      
-      ~ .icon {
+
+      ~.icon {
         color: $FUDMASTER-BLUE;
       }
     }
@@ -314,7 +321,7 @@ $alert-success: #10b981;
     color: rgba($FUDMASTER-DARK, 0.5);
     cursor: pointer;
     padding: 4px;
-    
+
     &:hover {
       color: $FUDMASTER-DARK;
     }
@@ -336,13 +343,13 @@ $alert-success: #10b981;
   justify-content: center;
   gap: 10px;
   transition: all 0.2s;
-  
+
   &:hover:not(:disabled) {
     background: lighten($FUDMASTER-DARK, 5%);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba($FUDMASTER-DARK, 0.2);
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -352,7 +359,7 @@ $alert-success: #10b981;
     background: transparent;
     color: $FUDMASTER-DARK;
     border: 2px solid rgba($FUDMASTER-DARK, 0.1);
-    
+
     &:hover {
       border-color: $FUDMASTER-DARK;
       background: transparent;
@@ -376,7 +383,7 @@ $alert-success: #10b981;
   font-size: 14px;
   cursor: pointer;
   padding: 0;
-  
+
   &:hover {
     color: $FUDMASTER-DARK;
     text-decoration: underline;
@@ -389,7 +396,14 @@ $alert-success: #10b981;
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

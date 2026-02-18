@@ -33,7 +33,7 @@ function sanitizeUrl(url?: string) {
 }
 
 function coverOf(course: any) {
-  return sanitizeUrl(course?.image_url) || sanitizeUrl(course?.coverUrl) || '/src/assets/fudmaster-color.png'
+  return sanitizeUrl(course?.image_url) || sanitizeUrl(course?.coverUrl) || '@/assets/logos/logo-short.png'
 }
 
 function flattenLectures(course: any): any[] {
