@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, watch, ref, nextTick } from 'vue'
+import { onMounted, computed, ref, nextTick } from 'vue'
 import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses'
 import { useUserStore } from '@/stores/user'
@@ -73,51 +73,35 @@ const ctaIcon = computed(() => {
   return 'fa-solid fa-play'
 })
 
-const courseTransitioning = ref(false)
+// Single unified loading state — starts true so skeleton shows immediately
+const courseLoading = ref(true)
 
-onMounted(async () => {
-  if (id.value) {
-    try {
-      await store.fetchById(id.value)
-      if (userId.value) {
-        await store.fetchProgress(id.value, userId.value)
-      }
-    } catch (e) {
-      console.error('Error loading course details', e)
-    }
-  }
-})
-
-// Trigger skeleton immediately when route params change (before navigation completes if possible)
-onBeforeRouteUpdate(async (to, from, next) => {
-  if (to.params.id !== from.params.id) {
-    courseTransitioning.value = true
-    store.currentCourse = null
-    await nextTick()
-    try {
-      await store.fetchById(to.params.id as string)
-      if (userId.value) await store.fetchProgress(to.params.id as string, userId.value)
-    } catch (e) {
-      console.error('Error loading course details', e)
-    } finally {
-      courseTransitioning.value = false
-    }
-  }
-  next()
-})
-
-watch(id, async (newId) => {
-  if (!newId || courseTransitioning.value) return // Skip if handled by route update
-  courseTransitioning.value = true
+async function loadCourse(courseId: string) {
+  courseLoading.value = true
   store.currentCourse = null
+  store.error = ''
+  store.errorCode = null
   await nextTick()
   try {
-    await store.fetchById(newId)
-    if (userId.value) await store.fetchProgress(newId, userId.value)
+    await store.fetchById(courseId)
+    if (userId.value) await store.fetchProgress(courseId, userId.value)
   } catch (e) {
     console.error('Error loading course details', e)
+  } finally {
+    courseLoading.value = false
   }
-  courseTransitioning.value = false
+}
+
+onMounted(() => {
+  if (id.value) loadCourse(id.value)
+})
+
+// Show skeleton immediately when navigating between courses
+onBeforeRouteUpdate((to, from, next) => {
+  if (to.params.id !== from.params.id) {
+    loadCourse(to.params.id as string)
+  }
+  next()
 })
 
 
@@ -150,32 +134,36 @@ const showLanding = computed(() => {
 
 <template>
   <div class="course-detail">
-    <!-- Skeleton while transitioning between courses -->
-    <div v-if="courseTransitioning" class="course-content-container skeleton-course">
+    <!-- YouTube-style Skeleton — shows on initial load AND course transitions -->
+    <div v-if="courseLoading" class="course-content-container skeleton-course">
       <div class="skeleton skeleton-progress-bar"></div>
-      <div class="header">
+      <div class="skeleton-header">
         <div class="skeleton skeleton-btn"></div>
         <div class="skeleton skeleton-heading"></div>
       </div>
-      <div class="content">
-        <div class="left">
+      <div class="skeleton-body">
+        <div class="skeleton-left">
           <div class="skeleton skeleton-cover"></div>
-          <div class="skeleton skeleton-line"></div>
-          <div class="skeleton skeleton-line medium"></div>
-          <div class="skeleton skeleton-line short"></div>
+          <div class="skeleton-info">
+            <div class="skeleton skeleton-line-lg"></div>
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line medium"></div>
+            <div class="skeleton skeleton-line short"></div>
+          </div>
+          <div class="skeleton-actions">
+            <div class="skeleton skeleton-cta"></div>
+            <div class="skeleton skeleton-cta-sm"></div>
+          </div>
         </div>
-        <div class="right">
-          <div class="skeleton skeleton-playlist" v-for="i in 5" :key="i"></div>
+        <div class="skeleton-right">
+          <div class="skeleton skeleton-playlist-header"></div>
+          <div class="skeleton skeleton-playlist" v-for="i in 6" :key="i"></div>
         </div>
       </div>
     </div>
 
-    <div v-else-if="store.loading && !store.currentCourse" class="loading-state">
-       <div class="spinner"><i class="fa-solid fa-spinner fa-spin" /></div>
-    </div>
-
     <!-- 404 Not Found (Course itself) -->
-    <div v-else-if="(!store.currentCourse && !store.loading) || (store.error && !store.currentCourse)" class="error-state">
+    <div v-else-if="!store.currentCourse || (store.error && !store.currentCourse)" class="error-state">
        <div class="empty">
         <i class="fa-regular fa-face-meh" /> No se encontró el curso.
       </div>
@@ -191,7 +179,7 @@ const showLanding = computed(() => {
     </div>
 
     <!-- STUDENT DASHBOARD (Enrolled) -->
-    <div v-else-if="!courseTransitioning" class="course-content-container">
+    <div v-else class="course-content-container">
       <div class="progress">
         <div class="progress-bar" :style="{ width: progressPercent + '%' }"></div>
         <div class="progress-meta">Progreso: {{ progressPercent }}% · {{ progressText }}</div>
@@ -280,32 +268,76 @@ const showLanding = computed(() => {
   animation: shimmer 1.4s infinite linear;
 }
 
-.skeleton-course .content {
+/* Skeleton Layout */
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.skeleton-body {
+  display: grid;
+  gap: 24px;
   grid-template-columns: 1fr;
 
   @media (min-width: 960px) {
     grid-template-columns: 1.4fr 1fr;
   }
+
+  @media (min-width: 1280px) {
+    grid-template-columns: 1.8fr 1fr;
+  }
 }
 
+.skeleton-left {
+  display: grid;
+  gap: 16px;
+}
+
+.skeleton-right {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.skeleton-info {
+  display: grid;
+  gap: 10px;
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Skeleton Shapes */
 .skeleton-progress-bar {
   height: 8px;
   border-radius: 999px;
 }
 
 .skeleton-btn {
-  height: 32px;
+  height: 36px;
   width: 100px;
+  border-radius: 999px;
 }
 
 .skeleton-heading {
-  height: 32px;
-  width: 65%;
+  height: 36px;
+  width: 60%;
+  flex: 1;
 }
 
 .skeleton-cover {
   width: 100%;
   aspect-ratio: 16/9;
+  border-radius: 12px;
+}
+
+.skeleton-line-lg {
+  height: 20px;
+  width: 75%;
 }
 
 .skeleton-line {
@@ -313,17 +345,35 @@ const showLanding = computed(() => {
   width: 90%;
 
   &.medium {
-    width: 70%;
+    width: 65%;
   }
 
   &.short {
-    width: 45%;
+    width: 40%;
   }
 }
 
+.skeleton-cta {
+  height: 44px;
+  width: 180px;
+  border-radius: 999px;
+}
+
+.skeleton-cta-sm {
+  height: 44px;
+  width: 140px;
+  border-radius: 999px;
+}
+
+.skeleton-playlist-header {
+  height: 22px;
+  width: 50%;
+  margin-bottom: 4px;
+}
+
 .skeleton-playlist {
-  height: 52px;
-  margin-bottom: 8px;
+  height: 56px;
+  border-radius: 10px;
 }
 
 .course-content-container {
