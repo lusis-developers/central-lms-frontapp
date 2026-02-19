@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import coursesService from '@/services/courses.service'
+import { useSchoolStore } from '@/stores/school'
+import { useUserStore } from '@/stores/user'
 
 export const useCoursesStore = defineStore('courses', {
   state: () => ({
@@ -68,7 +70,7 @@ export const useCoursesStore = defineStore('courses', {
     async goToNextLecture(courseId: string | number, router: any, scope: 'global' | 'section' = 'global', currentLectureId?: string | number) {
       console.log('[coursesStore] goToNextLecture', { courseId, scope, currentLectureId })
       if (!this.currentCourse) {
-        try { await this.fetchById(courseId) } catch {}
+        try { await this.fetchById(courseId) } catch { }
       }
       if (!this.currentLecture && currentLectureId !== undefined) {
         this.setCurrentLectureFromCourse(currentLectureId)
@@ -95,7 +97,29 @@ export const useCoursesStore = defineStore('courses', {
       try {
         const { data } = await coursesService.list<any>(params)
         const payload = data as any
-        const items = Array.isArray(payload?.courses?.courses) ? payload.courses.courses : []
+        let items = Array.isArray(payload?.courses?.courses) ? payload.courses.courses : []
+
+        // --- MULTI-SCHOOL SIMULATION START ---
+        // Assign each course to a school deterministically based on ID to simulate backend relation
+        // Schools: 'adm-gastronomica', 'digitalizacion-emp', 'marketing-diseno', 'inteligencia-emocional', 'monetizacion'
+        // Schools: 'adm-gastronomica', 'digitalizacion-emp', 'marketing-diseno', 'inteligencia-emocional', 'monetizacion'
+        // const schoolIds = [ ... ] // Removed as unused
+
+        items = items.map((course: any) => {
+          // Force assignment to 'adm-gastronomica' as requested by user
+          return {
+            ...course,
+            schoolId: 'adm-gastronomica'
+          }
+        })
+
+        // Filter by Current School if set
+        const schoolStore = useSchoolStore()
+        if (schoolStore.currentSchool) {
+          items = items.filter((c: any) => c.schoolId === schoolStore.currentSchool?.id)
+        }
+        // --- MULTI-SCHOOL SIMULATION END ---
+
         const meta = payload?.courses?.meta || {}
         this.meta = {
           total: Number(meta?.total || 0),
@@ -237,17 +261,34 @@ export const useCoursesStore = defineStore('courses', {
         return this.progress
       } catch (e: any) {
         console.log('[coursesStore] fetchProgress error', e)
-        const status = e?.response?.status
+        const status = e?.response?.status || 500
         const msg = e?.response?.data?.message || e?.message || ''
-        
+
+        // --- FOUNDER OVERRIDE START ---
+        const userStore = useUserStore()
+        if (userStore.accountType === 'founder' && (status === 404 || msg.includes('Found'))) {
+          console.log('[coursesStore] Founder 404 override: Mocking enrollment')
+          this.error = ''
+          this.errorCode = null
+          const total = this.computeTotalLectures() || 10
+          this.progress = {
+            percent: 0,
+            completed: 0,
+            total: total,
+            completedLectureIds: [],
+          }
+          return this.progress
+        }
+        // --- FOUNDER OVERRIDE END ---
+
         this.error = msg || 'Error al obtener progreso'
-        
+
         if (status === 404 || msg === 'Not Found' || msg.includes('404')) {
           this.errorCode = 404
         } else {
           this.errorCode = status || 500
         }
-        
+
         return null
       } finally {
         this.loading = false

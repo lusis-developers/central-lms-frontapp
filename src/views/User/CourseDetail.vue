@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, ref, watch } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses'
 import { useUserStore } from '@/stores/user'
@@ -10,18 +10,8 @@ const route = useRoute()
 const router = useRouter()
 const store = useCoursesStore()
 const userStore = useUserStore()
-import UserSidebar from '@/components/UserSidebar.vue'
-import UserHeader from '@/components/UserHeader.vue'
 import PublicHeader from '@/components/PublicHeader.vue'
 
-const menuIsOpen = ref(false)
-function openCloseMenu() { menuIsOpen.value = !menuIsOpen.value }
-
-watch(() => route.fullPath, () => {
-  menuIsOpen.value = false
-});
-
-const id = computed(() => route.params.id as string)
 
 const userId = computed(() => {
   if (!userStore.id) userStore.hydrate()
@@ -29,6 +19,7 @@ const userId = computed(() => {
   return typeof uid === 'number' ? String(uid) : (uid || '')
 })
 
+const id = computed(() => route.params.id as string)
 const progressPercent = computed(() => Number(store.progress?.percent || 0))
 const progressText = computed(() => {
   const c = Number(store.progress?.completed || 0)
@@ -42,7 +33,7 @@ function sanitizeUrl(url?: string) {
 }
 
 function coverOf(course: any) {
-  return sanitizeUrl(course?.image_url) || sanitizeUrl(course?.coverUrl) || '/src/assets/fudmaster-color.png'
+  return sanitizeUrl(course?.image_url) || sanitizeUrl(course?.coverUrl) || '@/assets/logos/logo-short.png'
 }
 
 function flattenLectures(course: any): any[] {
@@ -116,6 +107,7 @@ const showLanding = computed(() => {
   // If logged in, check if we have an enrollment error (meaning not enrolled)
   // or logic dictates we don't have access.
   // The store sets errorCode = 404 when "fetchProgress" fails due to not found (not enrolled).
+  if (userStore.accountType === 'founder') return false // Founders bypass enrollment check
   if (store.errorCode === 404) return true
 
   return false
@@ -145,198 +137,57 @@ const showLanding = computed(() => {
     </div>
 
     <!-- STUDENT DASHBOARD (Enrolled) -->
-    <!-- STUDENT DASHBOARD (Enrolled) + LAYOUT RECONSTRUCTION -->
-    <div v-else class="wrapper">
-      <div class="header-layout">
-        <UserHeader @toggle-sidebar="openCloseMenu" />
+    <div v-else class="course-content-container">
+      <div class="progress">
+        <div class="progress-bar" :style="{ width: progressPercent + '%' }"></div>
+        <div class="progress-meta">Progreso: {{ progressPercent }}% · {{ progressText }}</div>
       </div>
       
-      <!-- Mobile Sidebar Overlay (Copied from UserLayout) -->
-      <button class="floating-menu-btn" type="button" @click="openCloseMenu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-      <div class="overlay" v-if="menuIsOpen" @click.self="openCloseMenu">
-          <div class="overlay-panel">
-            <div class="overlay-head">
-               <img src="@/assets/iso-verde.png" alt="logo" class="overlay-logo" />
-            </div>
-            <UserSidebar :menuIsOpen="false" />
+        <div class="header">
+          <div class="header-top">
+            <button class="back" type="button" @click="goBack"><i class="fa-solid fa-arrow-left" /> Volver</button>
+            <button class="cta-start small" type="button" :disabled="!resumeLectureId" @click="resumeLectureId && openLecture(resumeLectureId)">
+              <i :class="ctaIcon" /> 
+              <span>{{ ctaLabel }}</span>
+            </button>
           </div>
-      </div>
-
-      <div class="layout">
-        <div class="layout-menu-wrapper">
-          <UserSidebar :menuIsOpen="menuIsOpen" />
+          <h2 class="title"><i class="fa-solid fa-graduation-cap" /> {{ store.currentCourse.name || store.currentCourse.title }}</h2>
         </div>
-        <div class="layout-view-wrapper">
-           <!-- ACTUAL COURSE DETAIL CONTENT -->
-           <div class="container course-content-container">
-              <div class="progress">
-                <div class="progress-bar" :style="{ width: progressPercent + '%' }"></div>
-                <div class="progress-meta">Progreso: {{ progressPercent }}% · {{ progressText }}</div>
+        <div class="content">
+          <div class="left">
+            <div class="cover">
+              <img :src="coverOf(store.currentCourse)" alt="course cover" />
+            </div>
+            <div class="info">
+              <p class="subtitle">{{ store.currentCourse.heading || store.currentCourse.shortDescription || store.currentCourse.description }}</p>
+              <div class="author" v-if="store.currentCourse.author_bio">
+                <span class="author-name"><i class="fa-solid fa-user" /> {{ store.currentCourse.author_bio.name }}</span>
               </div>
-              
-               <div class="header">
-                  <div class="header-top">
-                    <button class="back" type="button" @click="goBack"><i class="fa-solid fa-arrow-left" /> Volver</button>
-                    <button class="cta-start small" type="button" :disabled="!resumeLectureId" @click="resumeLectureId && openLecture(resumeLectureId)">
-                      <i :class="ctaIcon" /> 
-                      <span>{{ ctaLabel }}</span>
-                    </button>
-                  </div>
-                  <h2 class="title"><i class="fa-solid fa-graduation-cap" /> {{ store.currentCourse.name || store.currentCourse.title }}</h2>
-                </div>
-                <div class="content">
-                  <div class="left">
-                    <div class="cover">
-                      <img :src="coverOf(store.currentCourse)" alt="course cover" />
-                    </div>
-                    <div class="info">
-                      <p class="subtitle">{{ store.currentCourse.heading || store.currentCourse.shortDescription || store.currentCourse.description }}</p>
-                      <div class="author" v-if="store.currentCourse.author_bio">
-                        <span class="author-name"><i class="fa-solid fa-user" /> {{ store.currentCourse.author_bio.name }}</span>
-                      </div>
-                      <div class="actions">
-                        <button class="cta-start" type="button" :disabled="!resumeLectureId" @click="resumeLectureId && openLecture(resumeLectureId)">
-                          <i :class="ctaIcon" /> 
-                          <span>{{ ctaLabel }}</span>
-                        </button>
-                        <button class="cta-quiz" type="button" @click="startQuiz">
-                          <i class="fa-solid fa-list-check" /> 
-                          <span>Iniciar quiz</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="right" v-if="Array.isArray(store.currentCourse.lecture_sections) && store.currentCourse.lecture_sections.length">
-                    <PlaylistSidebar :sections="store.currentCourse.lecture_sections" :course-id="String(id)" :completed-lecture-ids="store.progress.completedLectureIds" />
-                  </div>
-                </div>
-           </div>
-           <!-- END CONTENT -->
+              <div class="actions">
+                <button class="cta-start" type="button" :disabled="!resumeLectureId" @click="resumeLectureId && openLecture(resumeLectureId)">
+                  <i :class="ctaIcon" /> 
+                  <span>{{ ctaLabel }}</span>
+                </button>
+                <button class="cta-quiz" type="button" @click="startQuiz">
+                  <i class="fa-solid fa-list-check" /> 
+                  <span>Iniciar quiz</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="right" v-if="Array.isArray(store.currentCourse.lecture_sections) && store.currentCourse.lecture_sections.length">
+            <PlaylistSidebar :sections="store.currentCourse.lecture_sections" :course-id="String(id)" :completed-lecture-ids="store.progress.completedLectureIds" />
+          </div>
         </div>
-      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-// --- LAYOUT STYLES (Copied from UserLayout) ---
-.wrapper {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-
-  .header-layout {
-    width: 100%;
-    flex: 0 0 auto;
-  }
-
-  .floating-menu-btn {
-    display: none;
-  }
-
-  .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: color-mix(in oklab, var(--text), transparent 68%);
-    z-index: 1000;
-  }
-
-  .overlay-panel {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    max-width: 280px;
-    background: var(--bg);
-    border-right: 1px solid var(--border);
-    box-shadow: 0 8px 24px rgba($FUDMASTER-DARK, 0.2);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .overlay-head {
-    padding: 16px 12px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .overlay-logo {
-    width: 36px;
-    height: 36px;
-    object-fit: contain;
-  }
-}
-
-.layout {
-  flex: 1 1 auto;
-  display: flex;
-  overflow: hidden;
-
-  &-menu-wrapper {
-    width: 100%;
-    max-width: fit-content;
-    min-width: 24px;
-    overflow: hidden;
-    flex: 0 0 auto;
-  }
-
-  &-view-wrapper {
-    width: 100%;
-    flex: 1 1 auto;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-@media (max-width: 1024px) {
-  .wrapper {
-    .floating-menu-btn {
-      position: fixed;
-      bottom: 16px;
-      left: 16px;
-      z-index: 1100;
-      background: var(--accent);
-      color: $white;
-      border: none;
-      border-radius: 999px;
-      width: 44px;
-      height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 16px color-mix(in oklab, var(--text), transparent 80%);
-      cursor: pointer;
-    }
-
-    .floating-menu-btn:active {
-      filter: brightness(0.95);
-    }
-
-    .layout {
-      &-menu-wrapper {
-        display: none;
-      }
-    }
-
-    .overlay {
-      display: block;
-    }
-  }
-}
-
 // --- CONTENT STYLES ---
 
 .course-detail {
   width: 100%;
-  // padding removed here as it is handled by layout/wrapper now
   background: var(--bg);
   color: var(--text);
 
@@ -345,7 +196,7 @@ const showLanding = computed(() => {
   .loading-state,
   .error-state,
   .landing-layout {
-    min-height: 100vh;
+    min-height: 100%;
   }
 }
 
@@ -359,7 +210,7 @@ const showLanding = computed(() => {
   margin: 0 auto;
   display: grid;
   gap: 16px;
-  padding: 24px 16px; // Add padding here
+  padding: 24px 16px;
 }
 
 // ... existing styles ...

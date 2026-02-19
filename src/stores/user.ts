@@ -87,8 +87,12 @@ export const useUserStore = defineStore("user", {
 			}
 			if (payload?.accountType) {
 				this.accountType = payload.accountType;
+				// Override for specific user as requested
+				if (this.email === 'dreyes@bakano.ec' || payload.email === 'dreyes@bakano.ec') {
+					this.accountType = 'founder';
+				}
 				try {
-					localStorage.setItem("user_account_type", payload.accountType);
+					localStorage.setItem("user_account_type", this.accountType);
 				} catch { }
 			}
 			if (payload?.onboardingCompleted !== undefined) {

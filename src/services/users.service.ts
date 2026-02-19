@@ -169,7 +169,12 @@ class UsersService extends APIBase {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${firebaseToken}`
     }
-    return this.post<T>('users/google-login', {}, headers, config)
+    try {
+      return await this.post<T>('users/google-login', {}, headers, config)
+    } catch (error) {
+      console.error('❌ Google Login Error:', error)
+      throw error
+    }
   }
 
   async logout(): Promise<void> {

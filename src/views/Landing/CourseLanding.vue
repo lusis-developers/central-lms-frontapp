@@ -20,7 +20,7 @@ function sanitizeUrl(url?: string) {
 }
 
 const coverImage = computed(() => {
-  return sanitizeUrl(props.course?.image_url) || sanitizeUrl(props.course?.coverUrl) || '/src/assets/fudmaster-color.png'
+  return sanitizeUrl(props.course?.image_url) || sanitizeUrl(props.course?.coverUrl) || '@/assets/logos/logo-short.png'
 })
 
 const authorName = computed(() => props.course?.author_bio?.name || 'Instructor Fudmaster')

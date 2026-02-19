@@ -1,24 +1,50 @@
-$FUDMASTER-PINK: #DA4167;
+// --- Brand Core Colors ---
+$FUDMASTER-PRIMARY: #010D27; // Deep Navy (unchanged, good for contrast/text)
+$FUDMASTER-TEAL: #2BBB92; // Teal Green (Primary Action / Brand)
+$FUDMASTER-YELLOW: #FFC107; // Vibrant Yellow (Accent / Highlights)
+$FUDMASTER-BLUE: #0a81d1; // Secondary Blue
+$FUDMASTER-ORANGE: #F96E46; // Accent Orange
+$FUDMASTER-PINK: #DA4167; // Accent Pink
+$FUDMASTER-PURPLE: #7F5A83;
 $FUDMASTER-DARK: #010D27;
-$FUDMASTER-LIGHT: #f5f3ef;
-$FUDMASTER-BLUE: #0a81d1;
-$FUDMASTER-ORANGE: #F96E46;
-$FUDMASTER-PURPLE: #7F5A83; 
-$FUDMASTER-PRIMARY: #010D27;
-$FUDMASTER-SECONDARY: #2BBB92;
 
+// --- Functional Colors ---
 $white: #ffffff;
+$black: #000000;
+$text-main: $FUDMASTER-PRIMARY;
 $text-light: #f5f5f5;
+$text-muted: #6b7280;
+
+// --- Background Colors ---
+$bg-light: #f9fafb; // Light Gray/White for sections
+$bg-white: #ffffff;
+$bg-alt: #f3f4f6; // Alternative section bg
+
+// --- Component Specific ---
 $overlay-purple: rgba($FUDMASTER-BLUE, 0.1);
+$overlay-teal: rgba($FUDMASTER-TEAL, 0.1);
+$overlay-yellow: rgba($FUDMASTER-YELLOW, 0.1);
 
-$FUDMASTER-GREEN: #2BBB92;
+// --- Semantic Aliases (Use these in components) ---
+$color-primary: $FUDMASTER-TEAL;
+$color-secondary: $FUDMASTER-PRIMARY; // Or Blue depending on usage
+$color-accent: $FUDMASTER-YELLOW;
+$color-success: #10b981;
+$color-warning: #f59e0b;
+$color-danger: #ef4444;
+$color-info: $FUDMASTER-BLUE;
 
-// Alert colors
-$alert-warning: #f59e0b;
-$alert-info: #3b82f6;
-$alert-success: #10b981;
-$alert-error: #ef4444;
+// --- Alert Colors (Keep existing logic/names if used elsewhere) ---
+$alert-warning: $color-warning;
+$alert-info: $color-info;
+$alert-success: $color-success;
+$alert-error: $color-danger;
 $alert-warning-bg: rgba($alert-warning, 0.1);
 $alert-info-bg: rgba($alert-info, 0.1);
 $alert-success-bg: rgba($alert-success, 0.1);
 $alert-error-bg: rgba($alert-error, 0.1);
+
+// --- Legacy Support (Aliases for existing components) ---
+$FUDMASTER-GREEN: $FUDMASTER-TEAL;
+$FUDMASTER-SECONDARY: $FUDMASTER-TEAL; // Map old secondary to new Teal
+$FUDMASTER-LIGHT: $bg-alt; // Map old light to new alt/light background

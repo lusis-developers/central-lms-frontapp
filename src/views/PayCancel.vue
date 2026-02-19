@@ -22,7 +22,7 @@ onMounted(() => {
   <div class="pay-cancel-wrapper">
     <div class="card">
       <div class="brand">
-        <img src="/src/assets/fudmaster-color.png" alt="fudmaster-logo" />
+        <img src="@/assets/logos/logo-short.png" alt="fudmaster-logo" />
       </div>
 
       <div class="icon-box">
@@ -73,6 +73,7 @@ onMounted(() => {
 
   .brand {
     margin-bottom: 24px;
+
     img {
       height: 32px;
       width: auto;
@@ -133,8 +134,13 @@ onMounted(() => {
 }
 
 @keyframes bounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-10px); }
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-10px);
+  }
 }
 
 // Dark Mode Support
@@ -142,9 +148,14 @@ onMounted(() => {
   .card {
     background: #0b1629;
     border-color: rgba(255, 255, 255, 0.1);
-    
-    .title { color: $white; }
-    .message { color: rgba(255, 255, 255, 0.7); }
+
+    .title {
+      color: $white;
+    }
+
+    .message {
+      color: rgba(255, 255, 255, 0.7);
+    }
   }
 }
 </style>

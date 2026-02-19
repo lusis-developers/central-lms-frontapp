@@ -154,7 +154,7 @@ async function submit() {
   <div class="login-page">
     
     <div class="brand-header">
-      <img src="/src/assets/fudmaster-color.png" alt="Fudmaster" class="logo" />
+      <img src="@/assets/logos/logo-short.png" alt="Central LMS" class="logo" />
     </div>
 
     <div class="card">
@@ -225,23 +225,23 @@ async function submit() {
       </div>
 
       <div class="card-footer">
-        <span class="hint">¿Aún no eres miembro Founder?</span>
+        <span class="hint">¿Aún no eres miembro?</span>
         <button class="buy-btn" type="button" @click="goToCheckout">
           Obtener Acceso de por Vida
         </button>
       </div>
     </div>
     
-    <p class="copyright">© Füdmaster Inc. Sistema seguro.</p>
+    <p class="copyright">© {{ new Date().getFullYear() }} Central LMS Inc. Sistema seguro.</p>
   </div>
 </template>
 
 <style lang="scss" scoped>
 // Variables locales (asumiendo que las globales están disponibles, pero por seguridad)
-$FUDMASTER-DARK: #010D27;
-$FUDMASTER-LIGHT: #f5f3ef;
-$FUDMASTER-GREEN: #2BBB92;
-$FUDMASTER-BLUE: #0a81d1;
+$BRAND-DARK: #010D27;
+$BRAND-LIGHT: #f5f3ef;
+$BRAND-GREEN: #2BBB92;
+$BRAND-BLUE: #0a81d1;
 $white: #ffffff;
 $alert-error: #ef4444;
 $alert-info: #3b82f6;
@@ -250,7 +250,7 @@ $alert-info: #3b82f6;
   width: 100%;
   min-height: 100vh;
   padding: 40px 16px;
-  background-color: $FUDMASTER-LIGHT; // Fondo de página claro
+  background-color: $BRAND-LIGHT; // Fondo de página claro
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -272,9 +272,9 @@ $alert-info: #3b82f6;
   max-width: 480px;
   background: $white;
   border-radius: 20px;
-  box-shadow: 0 20px 40px -10px rgba($FUDMASTER-DARK, 0.1);
+  box-shadow: 0 20px 40px -10px rgba($BRAND-DARK, 0.1);
   overflow: hidden; // Para que el footer no se salga
-  border: 1px solid rgba($FUDMASTER-DARK, 0.05);
+  border: 1px solid rgba($BRAND-DARK, 0.05);
   animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -283,7 +283,7 @@ $alert-info: #3b82f6;
 }
 
 .title {
-  color: $FUDMASTER-DARK;
+  color: $BRAND-DARK;
   font-size: 26px;
   font-weight: 800;
   margin: 0;
@@ -291,7 +291,7 @@ $alert-info: #3b82f6;
 }
 
 .subtitle {
-  color: rgba($FUDMASTER-DARK, 0.6);
+  color: rgba($BRAND-DARK, 0.6);
   font-size: 15px;
   margin: 8px 0 24px 0;
   text-align: center;
@@ -332,7 +332,7 @@ $alert-info: #3b82f6;
   label {
     font-size: 14px;
     font-weight: 600;
-    color: $FUDMASTER-DARK;
+    color: $BRAND-DARK;
   }
 }
 
@@ -344,7 +344,7 @@ $alert-info: #3b82f6;
 
 .forgot-link {
   font-size: 12px;
-  color: $FUDMASTER-BLUE;
+  color: $BRAND-BLUE;
   text-decoration: none;
   font-weight: 500;
 
@@ -357,20 +357,20 @@ $alert-info: #3b82f6;
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba($FUDMASTER-DARK, 0.03);
-  border: 1px solid rgba($FUDMASTER-DARK, 0.1);
+  background: rgba($BRAND-DARK, 0.03);
+  border: 1px solid rgba($BRAND-DARK, 0.1);
   border-radius: 12px;
   padding: 12px 16px;
   transition: all 0.2s ease;
 
   &:focus-within {
     background: $white;
-    border-color: $FUDMASTER-BLUE;
-    box-shadow: 0 0 0 4px rgba($FUDMASTER-BLUE, 0.1);
+    border-color: $BRAND-BLUE;
+    box-shadow: 0 0 0 4px rgba($BRAND-BLUE, 0.1);
   }
 
   .icon {
-    color: rgba($FUDMASTER-DARK, 0.5);
+    color: rgba($BRAND-DARK, 0.5);
     font-size: 18px;
   }
 
@@ -380,10 +380,10 @@ $alert-info: #3b82f6;
     background: transparent;
     outline: none;
     font-size: 16px;
-    color: $FUDMASTER-DARK;
+    color: $BRAND-DARK;
 
     &::placeholder {
-      color: rgba($FUDMASTER-DARK, 0.3);
+      color: rgba($BRAND-DARK, 0.3);
     }
   }
 
@@ -392,11 +392,11 @@ $alert-info: #3b82f6;
     border: none;
     padding: 4px;
     cursor: pointer;
-    color: rgba($FUDMASTER-DARK, 0.4);
+    color: rgba($BRAND-DARK, 0.4);
     transition: color 0.2s;
 
     &:hover {
-      color: $FUDMASTER-DARK;
+      color: $BRAND-DARK;
     }
   }
 }
@@ -404,7 +404,7 @@ $alert-info: #3b82f6;
 .submit-btn {
   margin-top: 10px;
   width: 100%;
-  background: $FUDMASTER-DARK; // Color solido oscuro para login
+  background: $BRAND-DARK; // Color solido oscuro para login
   color: $white;
   border: none;
   border-radius: 12px;
@@ -420,7 +420,7 @@ $alert-info: #3b82f6;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px -5px rgba($FUDMASTER-DARK, 0.3);
+    box-shadow: 0 10px 20px -5px rgba($BRAND-DARK, 0.3);
   }
 
   &:disabled {
@@ -441,12 +441,12 @@ $alert-info: #3b82f6;
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba($FUDMASTER-DARK, 0.1);
+    background: rgba($BRAND-DARK, 0.1);
   }
 
   span {
     padding: 0 10px;
-    color: rgba($FUDMASTER-DARK, 0.5);
+    color: rgba($BRAND-DARK, 0.5);
     font-size: 13px;
     font-weight: 500;
   }
@@ -455,8 +455,8 @@ $alert-info: #3b82f6;
 .google-btn {
   width: 100%;
   background: $white;
-  color: $FUDMASTER-DARK;
-  border: 1px solid rgba($FUDMASTER-DARK, 0.2);
+  color: $BRAND-DARK;
+  border: 1px solid rgba($BRAND-DARK, 0.2);
   border-radius: 12px;
   padding: 14px;
   font-size: 16px;
@@ -470,7 +470,7 @@ $alert-info: #3b82f6;
 
   &:hover:not(:disabled) {
     background: #f8f9fa;
-    border-color: rgba($FUDMASTER-DARK, 0.4);
+    border-color: rgba($BRAND-DARK, 0.4);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
@@ -489,9 +489,9 @@ $alert-info: #3b82f6;
 
 // Footer seccion (Upsell)
 .card-footer {
-  background: rgba($FUDMASTER-DARK, 0.03);
+  background: rgba($BRAND-DARK, 0.03);
   padding: 20px 32px;
-  border-top: 1px solid rgba($FUDMASTER-DARK, 0.05);
+  border-top: 1px solid rgba($BRAND-DARK, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -500,13 +500,13 @@ $alert-info: #3b82f6;
 
   .hint {
     font-size: 14px;
-    color: rgba($FUDMASTER-DARK, 0.6);
+    color: rgba($BRAND-DARK, 0.6);
   }
 
   .buy-btn {
     background: transparent;
-    border: 2px solid $FUDMASTER-GREEN; // Borde verde para llamar atención sin ser agresivo
-    color: $FUDMASTER-GREEN;
+    border: 2px solid $BRAND-GREEN; // Borde verde para llamar atención sin ser agresivo
+    color: $BRAND-GREEN;
     font-weight: 700;
     padding: 10px 20px;
     border-radius: 10px;
@@ -515,7 +515,7 @@ $alert-info: #3b82f6;
     font-size: 14px;
 
     &:hover {
-      background: $FUDMASTER-GREEN;
+      background: $BRAND-GREEN;
       color: $white;
     }
   }
@@ -523,7 +523,7 @@ $alert-info: #3b82f6;
 
 .copyright {
   font-size: 12px;
-  color: rgba($FUDMASTER-DARK, 0.4);
+  color: rgba($BRAND-DARK, 0.4);
 }
 
 @keyframes slideUp {

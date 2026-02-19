@@ -53,11 +53,13 @@ class APIBase {
   private axiosInstance = axios.create()
 
   constructor() {
-    const raw = (import.meta.env.VITE_FUDMASTER_API as string) || 'http://localhost:8101/api'
+    const raw = (import.meta.env.VITE_CENTRAL_LMS_API as string) || 'http://localhost:8101/api'
     const trimmed = raw.replace(/\/+$/, '')
     this.baseUrl = trimmed.endsWith('/api') || /\/api\//.test(trimmed)
       ? trimmed
       : `${trimmed}/api`
+
+    console.log('🌐 API Base URL:', this.baseUrl) // Debug log as requested
     this.setupInterceptors()
   }
 
@@ -133,7 +135,7 @@ class APIBase {
     return headers
   }
 
-  protected async get<T>(
+  public async get<T>(
     endpoint: string,
     headers?: { [key: string]: string },
     config?: AxiosRequestConfig,
@@ -157,7 +159,7 @@ class APIBase {
     }
   }
 
-  protected async post<T>(
+  public async post<T>(
     endpoint: string,
     data: unknown,
     headers?: { [key: string]: string },
@@ -223,7 +225,7 @@ class APIBase {
     }
   }
 
-  protected async put<T>(endpoint: string, data: unknown): Promise<AxiosResponse<T>> {
+  public async put<T>(endpoint: string, data: unknown): Promise<AxiosResponse<T>> {
     const url = this.buildUrl(endpoint)
     try {
       return await this.axiosInstance.put<T>(url, data, {
@@ -242,7 +244,7 @@ class APIBase {
     }
   }
 
-  protected async patch<T>(endpoint: string, data: unknown): Promise<AxiosResponse<T>> {
+  public async patch<T>(endpoint: string, data: unknown): Promise<AxiosResponse<T>> {
     const url = this.buildUrl(endpoint)
     try {
       return await this.axiosInstance.patch<T>(url, data, {
@@ -261,7 +263,7 @@ class APIBase {
     }
   }
 
-  protected async delete<T>(endpoint: string): Promise<AxiosResponse<T>> {
+  public async delete<T>(endpoint: string): Promise<AxiosResponse<T>> {
     const url = this.buildUrl(endpoint)
     try {
       return await this.axiosInstance.delete<T>(url, {
@@ -282,3 +284,4 @@ class APIBase {
 }
 
 export default APIBase
+export const http = new APIBase()
