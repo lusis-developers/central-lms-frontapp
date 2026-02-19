@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, watch, ref } from 'vue'
+import { onMounted, computed, watch, ref, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses'
 import { useUserStore } from '@/stores/user'
@@ -44,6 +44,7 @@ const progressText = computed(() => {
 const completing = ref(false)
 const completeError = ref('')
 const completeSuccess = ref('')
+const lectureTransitioning = ref(false)
 
 const currentUrl = computed(() => {
   const att = (store.currentLecture?.attachments || []).find((a: any) => a?.kind === 'video' && a?.url)
@@ -175,11 +176,16 @@ onMounted(async () => {
 
 watch(lectureId, async (lid) => {
   if (!lid) return
+  // Clear old content and activate skeleton BEFORE any async work
+  store.currentLecture = null
+  lectureTransitioning.value = true
   completing.value = false
   completeError.value = ''
   completeSuccess.value = ''
-  store.setCurrentLectureFromCourse(lid)
+  // Force Vue to render the skeleton before the fetch begins
+  await nextTick()
   if (courseId.value) await store.fetchLecture(courseId.value, lid)
+  lectureTransitioning.value = false
 })
 watch(progressPercent, (p) => { try { console.log('[LectureDetail] progressPercent', p) } catch { } })
 </script>
@@ -197,11 +203,20 @@ watch(progressPercent, (p) => { try { console.log('[LectureDetail] progressPerce
         <p class="meta">Posición {{ store.currentLecture?.position ?? '-' }} · {{ store.currentLecture?.is_published ? 'Publicada' : 'Borrador' }}</p>
       </div>
 
-      <div v-if="store.loading" class="loading"><i class="fa-solid fa-spinner fa-spin" /> Cargando clase...</div>
+      <!-- Skeleton while transitioning between lectures -->
+      <div v-if="lectureTransitioning" class="skeleton-layout">
+        <div class="skeleton skeleton-video"></div>
+        <div class="skeleton-meta">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line short"></div>
+        </div>
+      </div>
+      <div v-else-if="store.loading && !store.currentLecture" class="loading"><i class="fa-solid fa-spinner fa-spin" /> Cargando clase...</div>
       <div v-else-if="store.error" class="error"><i class="fa-solid fa-triangle-exclamation" /> {{ store.error }}</div>
       <div v-else-if="!store.currentLecture" class="empty"><i class="fa-regular fa-face-meh" /> No se encontró la clase.</div>
 
-      <div v-else class="lesson-layout">
+      <div v-else-if="!lectureTransitioning" class="lesson-layout">
         <!-- Main Content (Video, Tabs, Comments) -->
         <div class="main-content">
           <div class="player-wrap">
@@ -279,6 +294,58 @@ watch(progressPercent, (p) => { try { console.log('[LectureDetail] progressPerce
   padding: 24px 16px;
   background: var(--bg);
   color: var(--text);
+}
+
+/* Skeleton Loading */
+@keyframes shimmer {
+  0% {
+    background-position: -600px 0;
+  }
+
+  100% {
+    background-position: 600px 0;
+  }
+}
+
+.skeleton {
+  border-radius: 10px;
+  background: linear-gradient(90deg,
+      color-mix(in oklab, var(--bg), var(--text) 8%) 25%,
+      color-mix(in oklab, var(--bg), var(--text) 14%) 37%,
+      color-mix(in oklab, var(--bg), var(--text) 8%) 63%);
+  background-size: 1200px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.skeleton-layout {
+  display: grid;
+  gap: 20px;
+}
+
+.skeleton-video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+}
+
+.skeleton-meta {
+  display: grid;
+  gap: 12px;
+  padding: 0 4px;
+}
+
+.skeleton-title {
+  height: 28px;
+  width: 55%;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 80%;
+
+  &.short {
+    width: 45%;
+  }
 }
 
 .container {

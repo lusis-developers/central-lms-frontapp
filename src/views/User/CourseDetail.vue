@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onMounted, computed, watch, ref, nextTick } from 'vue'
+import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses'
 import { useUserStore } from '@/stores/user'
 import PlaylistSidebar from '@/components/lecture/PlaylistSidebar.vue'
@@ -73,6 +73,8 @@ const ctaIcon = computed(() => {
   return 'fa-solid fa-play'
 })
 
+const courseTransitioning = ref(false)
+
 onMounted(async () => {
   if (id.value) {
     try {
@@ -84,6 +86,38 @@ onMounted(async () => {
       console.error('Error loading course details', e)
     }
   }
+})
+
+// Trigger skeleton immediately when route params change (before navigation completes if possible)
+onBeforeRouteUpdate(async (to, from, next) => {
+  if (to.params.id !== from.params.id) {
+    courseTransitioning.value = true
+    store.currentCourse = null
+    await nextTick()
+    try {
+      await store.fetchById(to.params.id as string)
+      if (userId.value) await store.fetchProgress(to.params.id as string, userId.value)
+    } catch (e) {
+      console.error('Error loading course details', e)
+    } finally {
+      courseTransitioning.value = false
+    }
+  }
+  next()
+})
+
+watch(id, async (newId) => {
+  if (!newId || courseTransitioning.value) return // Skip if handled by route update
+  courseTransitioning.value = true
+  store.currentCourse = null
+  await nextTick()
+  try {
+    await store.fetchById(newId)
+    if (userId.value) await store.fetchProgress(newId, userId.value)
+  } catch (e) {
+    console.error('Error loading course details', e)
+  }
+  courseTransitioning.value = false
 })
 
 
@@ -116,7 +150,27 @@ const showLanding = computed(() => {
 
 <template>
   <div class="course-detail">
-    <div v-if="store.loading && !store.currentCourse" class="loading-state">
+    <!-- Skeleton while transitioning between courses -->
+    <div v-if="courseTransitioning" class="course-content-container skeleton-course">
+      <div class="skeleton skeleton-progress-bar"></div>
+      <div class="header">
+        <div class="skeleton skeleton-btn"></div>
+        <div class="skeleton skeleton-heading"></div>
+      </div>
+      <div class="content">
+        <div class="left">
+          <div class="skeleton skeleton-cover"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line medium"></div>
+          <div class="skeleton skeleton-line short"></div>
+        </div>
+        <div class="right">
+          <div class="skeleton skeleton-playlist" v-for="i in 5" :key="i"></div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="store.loading && !store.currentCourse" class="loading-state">
        <div class="spinner"><i class="fa-solid fa-spinner fa-spin" /></div>
     </div>
 
@@ -137,7 +191,7 @@ const showLanding = computed(() => {
     </div>
 
     <!-- STUDENT DASHBOARD (Enrolled) -->
-    <div v-else class="course-content-container">
+    <div v-else-if="!courseTransitioning" class="course-content-container">
       <div class="progress">
         <div class="progress-bar" :style="{ width: progressPercent + '%' }"></div>
         <div class="progress-meta">Progreso: {{ progressPercent }}% · {{ progressText }}</div>
@@ -203,6 +257,73 @@ const showLanding = computed(() => {
 .landing-layout {
   display: flex;
   flex-direction: column;
+}
+
+/* Skeleton Loading */
+@keyframes shimmer {
+  0% {
+    background-position: -600px 0;
+  }
+
+  100% {
+    background-position: 600px 0;
+  }
+}
+
+.skeleton {
+  border-radius: 10px;
+  background: linear-gradient(90deg,
+      color-mix(in oklab, var(--bg), var(--text) 8%) 25%,
+      color-mix(in oklab, var(--bg), var(--text) 14%) 37%,
+      color-mix(in oklab, var(--bg), var(--text) 8%) 63%);
+  background-size: 1200px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.skeleton-course .content {
+  grid-template-columns: 1fr;
+
+  @media (min-width: 960px) {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+.skeleton-progress-bar {
+  height: 8px;
+  border-radius: 999px;
+}
+
+.skeleton-btn {
+  height: 32px;
+  width: 100px;
+}
+
+.skeleton-heading {
+  height: 32px;
+  width: 65%;
+}
+
+.skeleton-cover {
+  width: 100%;
+  aspect-ratio: 16/9;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 90%;
+
+  &.medium {
+    width: 70%;
+  }
+
+  &.short {
+    width: 45%;
+  }
+}
+
+.skeleton-playlist {
+  height: 52px;
+  margin-bottom: 8px;
 }
 
 .course-content-container {
