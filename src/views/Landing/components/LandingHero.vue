@@ -13,12 +13,11 @@ const handleStartLearning = () => {
     <div class="hero-container">
       <div class="hero-content">
         <h1 class="hero-title">
-          La Mejor Plataforma <br />
-          <span class="highlight">Potencia tus Habilidades</span>
+          El mercado no solo necesita títulos,<br />
+          <span class="highlight">necesita talento.</span>
         </h1>
         <p class="hero-subtitle">
-          Desbloquea tu potencial con cursos dirigidos por expertos en artes culinarias, gestión y más.
-          Únete a una comunidad de estudiantes hoy.
+          El futuro llegó, la automatización y la inteligencia artificial están transformando el mundo laboral. En Nabux, dominas las habilidades que el mercado real exige hoy: Gestión, Automatización y Negocios. 
         </p>
         
         <div class="hero-actions">
@@ -80,7 +79,7 @@ const handleStartLearning = () => {
 }
 
 .hero-container {
-  max-width: 1280px;
+  max-width: 1400px; // Increased max-width for larger photo impact
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
@@ -219,11 +218,12 @@ const handleStartLearning = () => {
   .image-container {
     position: relative;
     width: 100%;
-    max-width: 500px;
+    // Remove fixed max-width to allow it to grow with grid
+    // max-width: 500px; 
     border-radius: 30px;
-    overflow: hidden; // Crop image if needed, or remove for cutout style
-    // If it's a cutout, we wouldn't use overflow hidden and background box.
-    // Simulating "Cutout" style with a masked image or simpler approach for now.
+    z-index: 1;
+    // Add a shadow or floating effect
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 
     .hero-image {
       width: 100%;
@@ -231,7 +231,6 @@ const handleStartLearning = () => {
       object-fit: cover;
       display: block;
       border-radius: 30px;
-      // Filter to blend or enhance if needed
     }
   }
 

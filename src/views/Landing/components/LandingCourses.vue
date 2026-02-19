@@ -54,7 +54,7 @@ onMounted(() => {
       </div>
 
       <div v-if="loading" class="loading-state">
-        <p>Cargando cursos...</p>
+        <div class="spinner"></div>
       </div>
 
       <div v-else class="courses-grid">
@@ -105,10 +105,26 @@ onMounted(() => {
 }
 
 .loading-state {
-  text-align: center;
-  padding: 40px;
-  color: $text-muted;
-  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  min-height: 300px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba($FUDMASTER-TEAL, 0.1);
+  border-left-color: $FUDMASTER-TEAL;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .header {

@@ -2,6 +2,8 @@
 import { useHead } from '@unhead/vue';
 import LandingNavbar from './components/LandingNavbar.vue';
 import LandingHero from './components/LandingHero.vue';
+import LandingTrustedBy from './components/LandingTrustedBy.vue';
+import LandingInteractiveFeatures from './components/LandingInteractiveFeatures.vue';
 import LandingCategories from './components/LandingCategories.vue';
 import LandingCourses from './components/LandingCourses.vue';
 
@@ -23,6 +25,12 @@ useHead({
     <main>
       <div id="hero">
         <LandingHero />
+      </div>
+      <div id="trusted">
+        <LandingTrustedBy />
+      </div>
+      <div id="features">
+        <LandingInteractiveFeatures />
       </div>
       <div id="categories">
         <LandingCategories />

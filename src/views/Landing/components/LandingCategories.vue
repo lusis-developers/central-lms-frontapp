@@ -7,7 +7,7 @@ const categories = [
     name: 'Administración Gastronómica',
     icon: 'fa-solid fa-utensils',
     color: '#F96E46',
-    description: 'Domina la gestión y rentabilidad de tu negocio culinario.',
+    description: 'No más teoría muerta. Construye un sistema operativo para tu cocina que garantice rentabilidad desde el día 1.',
     count: 5
   },
   {
@@ -15,7 +15,7 @@ const categories = [
     name: 'Digitalización Empresarial',
     icon: 'fa-solid fa-laptop-code',
     color: '#0a81d1',
-    description: 'Transforma tu negocio con herramientas digitales modernas.',
+    description: 'La K-Economy llegó. Automatiza, digitaliza y gestiona tu empresa con herramientas del futuro, no del pasado.',
     count: 5
   },
   {
@@ -23,7 +23,7 @@ const categories = [
     name: 'Marketing para No Marketeros',
     icon: 'fa-solid fa-bullhorn',
     color: '#DA4167',
-    description: 'Crea marcas impactantes y campañas que venden sin ser un experto.',
+    description: 'No busques likes, busca ventas. Aprende a contar tu historia y construir una marca con alma y propósito.',
     count: 5
   },
   {
@@ -31,7 +31,7 @@ const categories = [
     name: 'Finanzas Estratégicas',
     icon: 'fa-solid fa-coins',
     color: '#2BBB92',
-    description: 'Toma el control de los números y maximiza tus márgenes.',
+    description: 'Sal del "modo supervivencia". Domina los números para reinvertir, crecer y construir patrimonio real.',
     count: 4
   },
   {
@@ -39,7 +39,7 @@ const categories = [
     name: 'Experiencia y Servicio',
     icon: 'fa-solid fa-bell-concierge',
     color: '#FFC107',
-    description: 'Diseña experiencias memorables que fidelicen a tus clientes.',
+    description: 'Crea productos que la gente ame. Diseña experiencias memorables que conviertan clientes en fanáticos.',
     count: 6
   },
   {
@@ -47,7 +47,7 @@ const categories = [
     name: 'Liderazgo e Innovación',
     icon: 'fa-solid fa-lightbulb',
     color: '#7F5A83',
-    description: 'Desarrolla equipos de alto rendimiento y soluciones disruptivas.',
+    description: 'Sé un "Founder", no un jefe. Desarrolla la visión y resiliencia para navegar la incertidumbre y liderar el cambio.',
     count: 3
   },
 ]
