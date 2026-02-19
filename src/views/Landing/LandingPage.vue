@@ -26,11 +26,11 @@ useHead({
       <div id="hero">
         <LandingHero />
       </div>
-      <div id="trusted">
-        <LandingTrustedBy />
-      </div>
       <div id="features">
         <LandingInteractiveFeatures />
+      </div>
+      <div id="trusted">
+        <LandingTrustedBy />
       </div>
       <div id="categories">
         <LandingCategories />
