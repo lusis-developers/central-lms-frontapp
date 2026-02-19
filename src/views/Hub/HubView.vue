@@ -363,6 +363,7 @@ $white: #ffffff;
     display: flex;
     flex-direction: column;
     height: 100%;
+    align-items: center; // Center children horizontally (Flexbox approach)
   }
 
   .icon-wrapper {
@@ -374,36 +375,46 @@ $white: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem; // No auto margin needed with flex parent
     font-size: 2rem;
     font-weight: 800;
-    padding: 10px; // Add padding to prevent logo touching edges
+    padding: 10px;
 
     .school-logo {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1)); // Professional touch
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
     }
   }
 
-  h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    line-height: 1.2;
-    color: var(--text);
-  }
-
-  p {
-    font-size: 1rem;
-    color: color-mix(in srgb, var(--text) 70%, transparent);
-    line-height: 1.6;
+  .info {
+    width: 100%;
+    text-align: center;
     flex-grow: 1;
-    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    p {
+      font-size: 1rem;
+      color: color-mix(in srgb, var(--text) 70%, transparent);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      max-width: 90%;
+    }
   }
 
   .footer {
+    width: 100%; // Force full width
     display: flex;
     justify-content: space-between;
     align-items: center;
